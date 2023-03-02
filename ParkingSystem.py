@@ -27,8 +27,8 @@ class parkingSystem:
         parking_space = parkingSpace()
         self.parking_spaces.append(parking_space)
     
-    def add_vechile(self,vehicle_no,vehicle_type,vechile_owner,vehicle_colour,vehicle_brand):
-        vehicle_object=vehicle(vehicle_no,vehicle_type,vechile_owner,vehicle_colour,vehicle_brand)
+    def add_vehicle(self,vehicle_no,vehicle_type,vehicle_owner,vehicle_colour,vehicle_brand):
+        vehicle_object=vehicle(vehicle_no,vehicle_type,vehicle_owner,vehicle_colour,vehicle_brand)
         self.vehicles.append(vehicle_object)
         return vehicle_object
 
@@ -37,7 +37,101 @@ class parkingSystem:
         self.bookings.append(booking_object)
         return booking_object
 
+    def do_billing(self,vehicle_no):
+        vehicle_object=" "
+        for booking in self.bookings:
+            if(booking.vehicle_no==vehicle_no):
+                vehicle_object=booking
+        if(vehicle_object==" "):
+            print(Back.RED + "Enter Correct Vehicle no  ")
+            self.main_page()
 
+        v_type=vehicle_object.vehicle_type
+        park_in_time=vehicle_object.park_in_time
+        duration=datetime.datetime.now()-datetime.datetime.strptime(str(park_in_time),'%Y-%m-%d %H:%M:%S.%f')
+        duration=divmod(duration.total_seconds(),3600)[0]
+        if(v_type=="LMV"):
+            if(duration<2):
+                return 30
+            elif(duration<12):
+                return 80
+            else:
+                return 150
+        elif(v_type=="HMV"):
+            if(duration<2):
+                return 60
+            elif(duration<12):
+                return 140
+            else:
+                return 300
+        elif(v_type=="MC"):
+            if(duration<2):
+                return 10
+            elif(duration<12):
+                return 30
+            else:
+                return 70
+
+    def find_vehicle(self):
+        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
+        V_no=input("-> ")
+        V_no=V_no.upper()
+        vehicle_object=""
+        for booking in self.bookings:
+            if(booking.vehicle_no==V_no):
+                vehicle_object=booking
+
+        if(vehicle_object==""):
+            print(Back.RED + "Enter Correct Vehicle no  ")
+            return
+        building_no=vehicle_object.building
+        floor_no=vehicle_object.floor
+        row=vehicle_object.row
+        column=vehicle_object.column
+        print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
+        self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
+
+
+
+    def unpark_vehicle(self):
+        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to Unpark")
+        V_no=input("-> ")
+        V_no=V_no.upper()
+        vehicle_object=""
+        for booking in self.bookings:
+            if(booking.vehicle_no==V_no):
+                vehicle_object=booking
+
+        if(vehicle_object==""):
+            print(Back.RED + "Enter Correct Vehicle no  ")
+            return
+        building_no=vehicle_object.building
+        floor_no=vehicle_object.floor
+        row=vehicle_object.row
+        column=vehicle_object.column
+        print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
+        self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
+        print(Back.YELLOW +"Calculating vehicle Charges ")
+
+        charges=self.do_billing(V_no)
+
+        print(Back.GREEN +f"Charges for vehicle no {V_no} are {charges}$")
+        input("Press Enter if payment Recived")
+        self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=0
+        for vehicle_object in self.vehicles:
+            if(vehicle_object.vehicle_no==V_no):
+                vehicle_object.unpark_vehicle()
+        i=0
+        for booking in self.bookings:
+            i=i+1
+            if(booking.vehicle_no==V_no):
+                break
+            
+        self.bookings.pop(i-1)
+        
+
+        print(Back.GREEN +"vehicle unparked ")
+        print(Back.BLUE +"Thankyou for Visiting")
 
     def park_vehicle(self):
         (building_no,floor_no)=self.parking_spaces[0].display_parking()
@@ -83,7 +177,7 @@ class parkingSystem:
             print("Vehicle colour   = "+ V_colour)
             print("Vehicle brand    = "+ V_brand)
             input("Press Enter to continue or CTRL+C to Break Operation")
-            vehicle_object=self.add_vechile(V_no,V_type,V_owner,V_colour,V_brand)
+            vehicle_object=self.add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
             print(Back.GREEN + "Vehicle information stored")
         
         if(vehicle_data_present==True):
@@ -95,7 +189,7 @@ class parkingSystem:
         booking=self.do_booking(V_no,V_type,building_no,floor_no,row,column)
         booking.show_booking()
         self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=1	     
-        vehicle_object.park_vechile()
+        vehicle_object.park_vehicle()
 
     def employee_functionality(self):
         print(Back.CYAN + "+------------------------------+")
@@ -203,14 +297,15 @@ class parkingSystem:
         user_input = input("-> ")
         if user_input == '1':
             self.login()
-        # elif user_input == '2':
-        #     find_vehicle()
-        # elif user_input == '3':
-        #     print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
-        #     V_no=input("-> ")
-        #     current_cost=vehicle_charges(V_no)
-        #     print(Back.GREEN + f"Your Current Vechile charges are {current_cost} ")
-        #     self.main_page()
+        elif user_input == '2':
+            self.find_vehicle()
+            self.main_page()
+        elif user_input == '3':
+            print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
+            V_no=input("-> ")
+            current_cost=self.do_billing(V_no)
+            print(Back.GREEN + f"Your Current vehicle charges are {current_cost} ")
+            self.main_page()
         elif user_input == '4':
             exit()
         else:
