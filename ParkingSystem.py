@@ -97,18 +97,18 @@ class parkingSystem:
         print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to Unpark")
         V_no=input("-> ")
         V_no=V_no.upper()
-        vehicle_object=""
+        booking_object=""
         for booking in self.bookings:
             if(booking.vehicle_no==V_no):
-                vehicle_object=booking
+                booking_object=booking
 
-        if(vehicle_object==""):
+        if(booking_object==""):
             print(Back.RED + "Enter Correct Vehicle no  ")
             return
-        building_no=vehicle_object.building
-        floor_no=vehicle_object.floor
-        row=vehicle_object.row
-        column=vehicle_object.column
+        building_no=booking_object.building
+        floor_no=booking_object.floor
+        row=booking_object.row
+        column=booking_object.column
         print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
         self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
         print(Back.YELLOW +"Calculating vehicle Charges ")
@@ -184,6 +184,7 @@ class parkingSystem:
             if(vehicle_object.vehicle_parked=="P"):
                 print(Back.RED + "Vehicle Already Parked ")
                 self.employee_functionality()
+            print(Back.GREEN + "Vehicle information already stored")
             V_no=vehicle_object.vehicle_no
             V_type=vehicle_object.vehicle_type
         booking=self.do_booking(V_no,V_type,building_no,floor_no,row,column)
@@ -222,11 +223,12 @@ class parkingSystem:
         for employee in employees:
             if(employee.E_id==employee_id):
                 employee_password=employee.E_password
-
+        password=""
         if(employee_password==""):
             print(Back.RED +'Invalid Credentials')
             self.employee_login(admin_object)
         else:
+            
             print(Back.YELLOW +'   Please Enter Password :      ')
             password = getpass.getpass()
         if(password==employee_password):
@@ -303,7 +305,7 @@ class parkingSystem:
         elif user_input == '3':
             print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
             V_no=input("-> ")
-            current_cost=self.do_billing(V_no)
+            current_cost=self.do_billing(V_no.upper())
             print(Back.GREEN + f"Your Current vehicle charges are {current_cost} ")
             self.main_page()
         elif user_input == '4':
