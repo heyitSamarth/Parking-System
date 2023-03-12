@@ -24,6 +24,101 @@ class employee(user):
         print("Employee Password   = "+ self.E_password)
     
     
+    def unpark_vehicle(self,parking_spaces,vehicles,bookings,do_billing):
+        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to Unpark")
+        V_no=input("-> ")
+        V_no=V_no.upper()
+        booking_object=""
+        for booking in bookings:
+            if(booking.vehicle_no==V_no):
+                booking_object=booking
+
+        if(booking_object==""):
+            print(Back.RED + "Enter Correct Vehicle no  ")
+            return
+        building_no=booking_object.building
+        floor_no=booking_object.floor
+        row=booking_object.row
+        column=booking_object.column
+        print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
+        parking_spaces[0].view_slots(building_no,floor_no,row,column)
+        print(Back.YELLOW +"Calculating Vechile Charges ")
+
+        charges=do_billing(V_no)
+
+        print(Back.GREEN +f"Charges for vehicle no {V_no} are {charges}$")
+        input("Press Enter if payment Recived")
+        self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=0
+        for vehicle_object in vehicles:
+            if(vehicle_object.vehicle_no==V_no):
+                vehicle_object.unpark_vehicle()
+        i=0
+        for booking in bookings:
+            i=i+1
+            if(booking.vehicle_no==V_no):
+                break
+            
+        bookings.pop(i-1)
+        print(Back.GREEN +"Vechile unparked ")
+        print(Back.BLUE +"Thankyou for Visiting")
+
+    def park_vehicle(self,parking_spaces,vehicles,do_booking):
+        (building_no,floor_no)=parking_spaces[0].display_parking()
+        print(Back.YELLOW +  '   Please Enter row you want to select    : ')
+        row = int(input("-> "))
+        print(Back.YELLOW +  '   Please Enter column you want to select : ')
+        column = int(input("-> "))
+        if(parking_spaces[0].parking_space[building_no][floor_no][row][column]==1):
+            print(Back.RED + "Slot already booked ")
+            self.park_vehicle()
+        parking_spaces[0].view_slots(building_no,floor_no,row,column)
+        V_no=  input("Please Enter Vehicle no            -> ")
+        V_no=V_no.upper()
+        vehicle_data_present=False
+        vehicle_object=""
+        for vehicle in vehicles:
+            if(vehicle.vehicle_no==V_no):
+                vehicle_data_present=True
+                vehicle_object=vehicle
+
+        if(vehicle_data_present==False):
+            print(Back.CYAN + "+------------------------+")
+            print(Back.CYAN + "|  1- Car (LMV)          |")
+            print(Back.CYAN + "|  2- Truck (HMV)        |")
+            print(Back.CYAN + "|  3- Bike (MC)          |")
+            print(Back.CYAN + "+------------------------+")
+            V_type_option=0
+            while (V_type_option!='1' and  V_type_option!='2' and V_type_option!='3'):
+                V_type_option=input("Please Select Vehicle type         -> ")
+            if(V_type_option=='1'):
+                V_type="LMV"
+            if(V_type_option=='2'):
+                V_type="HMV"
+            if(V_type_option=='3'):
+                V_type="MC"
+            V_owner=str(input("Please Enter Vehicle owner         -> "))
+            V_colour=   input("Please enter Vehicle colour        -> ")
+            V_brand=    input("Please enter Vehicle brand         -> ")
+            print(Back.YELLOW + "Please Verify the Information")
+            print("Vehicle no       = "+ V_no)
+            print("Vehicle type     = "+ V_type)
+            print("Vehicle owner    = "+ V_owner)
+            print("Vehicle colour   = "+ V_colour)
+            print("Vehicle brand    = "+ V_brand)
+            input("Press Enter to continue or CTRL+C to Break Operation")
+            vehicle_object=self.add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
+            print(Back.GREEN + "Vehicle information stored")
+        
+        if(vehicle_data_present==True):
+            if(vehicle_object.vehicle_parked=="P"):
+                print(Back.RED + "Vehicle Already Parked ")
+                self.employee_functionality()
+            V_no=vehicle_object.vehicle_no
+            V_type=vehicle_object.vehicle_type
+        booking=do_booking(V_no,V_type,building_no,floor_no,row,column)
+        booking.show_booking()
+        parking_spaces[0].parking_space[building_no][floor_no][row][column]=1	     
+        vehicle_object.park_vehicle()
 
 
 

@@ -27,8 +27,8 @@ class parkingSystem:
         parking_space = parkingSpace()
         self.parking_spaces.append(parking_space)
     
-    def add_vehicle(self,vehicle_no,vehicle_type,vehicle_owner,vehicle_colour,vehicle_brand):
-        vehicle_object=vehicle(vehicle_no,vehicle_type,vehicle_owner,vehicle_colour,vehicle_brand)
+    def add_vechile(self,vehicle_no,vehicle_type,vechile_owner,vehicle_colour,vehicle_brand):
+        vehicle_object=vehicle(vehicle_no,vehicle_type,vechile_owner,vehicle_colour,vehicle_brand)
         self.vehicles.append(vehicle_object)
         return vehicle_object
 
@@ -45,7 +45,6 @@ class parkingSystem:
         if(vehicle_object==" "):
             print(Back.RED + "Enter Correct Vehicle no  ")
             self.main_page()
-
         v_type=vehicle_object.vehicle_type
         park_in_time=vehicle_object.park_in_time
         duration=datetime.datetime.now()-datetime.datetime.strptime(str(park_in_time),'%Y-%m-%d %H:%M:%S.%f')
@@ -73,7 +72,7 @@ class parkingSystem:
                 return 70
 
     def find_vehicle(self):
-        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
+        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want location to Unpark")
         V_no=input("-> ")
         V_no=V_no.upper()
         vehicle_object=""
@@ -88,111 +87,13 @@ class parkingSystem:
         floor_no=vehicle_object.floor
         row=vehicle_object.row
         column=vehicle_object.column
-        print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
+        print(Back.GREEN + f"Your Vechile is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
         self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
+        return (V_no,building_no,floor_no,row,column)
 
 
 
-    def unpark_vehicle(self):
-        print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to Unpark")
-        V_no=input("-> ")
-        V_no=V_no.upper()
-        booking_object=""
-        for booking in self.bookings:
-            if(booking.vehicle_no==V_no):
-                booking_object=booking
-
-        if(booking_object==""):
-            print(Back.RED + "Enter Correct Vehicle no  ")
-            return
-        building_no=booking_object.building
-        floor_no=booking_object.floor
-        row=booking_object.row
-        column=booking_object.column
-        print(Back.GREEN + f"Your vehicle is Located at Floor no {floor_no} of Buildin no {building_no} at Red location ( row {row} and column {column})")
-        self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
-        print(Back.YELLOW +"Calculating vehicle Charges ")
-
-        charges=self.do_billing(V_no)
-
-        print(Back.GREEN +f"Charges for vehicle no {V_no} are {charges}$")
-        input("Press Enter if payment Recived")
-        self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=0
-        for vehicle_object in self.vehicles:
-            if(vehicle_object.vehicle_no==V_no):
-                vehicle_object.unpark_vehicle()
-        i=0
-        for booking in self.bookings:
-            i=i+1
-            if(booking.vehicle_no==V_no):
-                break
-            
-        self.bookings.pop(i-1)
-        
-
-        print(Back.GREEN +"vehicle unparked ")
-        print(Back.BLUE +"Thankyou for Visiting")
-
-    def park_vehicle(self):
-        (building_no,floor_no)=self.parking_spaces[0].display_parking()
-        print(Back.YELLOW +  '   Please Enter row you want to select    : ')
-        row = int(input("-> "))
-        print(Back.YELLOW +  '   Please Enter column you want to select : ')
-        column = int(input("-> "))
-        if(self.parking_spaces[0].parking_space[building_no][floor_no][row][column]==1):
-            print(Back.RED + "Slot already booked ")
-            self.park_vehicle()
-        self.parking_spaces[0].view_slots(building_no,floor_no,row,column)
-        V_no=  input("Please Enter Vehicle no            -> ")
-        V_no=V_no.upper()
-        vehicle_data_present=False
-        vehicle_object=""
-        for vehicle in self.vehicles:
-            if(vehicle.vehicle_no==V_no):
-                vehicle_data_present=True
-                vehicle_object=vehicle
-
-        if(vehicle_data_present==False):
-            print(Back.CYAN + "+------------------------+")
-            print(Back.CYAN + "|  1- Car (LMV)          |")
-            print(Back.CYAN + "|  2- Truck (HMV)        |")
-            print(Back.CYAN + "|  3- Bike (MC)          |")
-            print(Back.CYAN + "+------------------------+")
-            V_type_option=0
-            while (V_type_option!='1' and  V_type_option!='2' and V_type_option!='3'):
-                V_type_option=input("Please Select Vehicle type         -> ")
-            if(V_type_option=='1'):
-                V_type="LMV"
-            if(V_type_option=='2'):
-                V_type="HMV"
-            if(V_type_option=='3'):
-                V_type="MC"
-            V_owner=str(input("Please Enter Vehicle owner         -> "))
-            V_colour=   input("Please enter Vehicle colour        -> ")
-            V_brand=    input("Please enter Vehicle brand         -> ")
-            print(Back.YELLOW + "Please Verify the Information")
-            print("Vehicle no       = "+ V_no)
-            print("Vehicle type     = "+ V_type)
-            print("Vehicle owner    = "+ V_owner)
-            print("Vehicle colour   = "+ V_colour)
-            print("Vehicle brand    = "+ V_brand)
-            input("Press Enter to continue or CTRL+C to Break Operation")
-            vehicle_object=self.add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
-            print(Back.GREEN + "Vehicle information stored")
-        
-        if(vehicle_data_present==True):
-            if(vehicle_object.vehicle_parked=="P"):
-                print(Back.RED + "Vehicle Already Parked ")
-                self.employee_functionality()
-            print(Back.GREEN + "Vehicle information already stored")
-            V_no=vehicle_object.vehicle_no
-            V_type=vehicle_object.vehicle_type
-        booking=self.do_booking(V_no,V_type,building_no,floor_no,row,column)
-        booking.show_booking()
-        self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=1	     
-        vehicle_object.park_vehicle()
-
-    def employee_functionality(self):
+    def employee_functionality(self,employee_object):
         print(Back.CYAN + "+------------------------------+")
         print(Back.CYAN + "|  1- Park a Vehicle           |")
         print(Back.CYAN + "|  2- Unpark a Vehicle         |")
@@ -201,38 +102,39 @@ class parkingSystem:
         print(Back.CYAN + "+------------------------------+")
         user_input = input("-> ")
         if user_input == '1':
-            self.park_vehicle()
-            self.employee_functionality()
+            employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking)
+            self.employee_functionality(employee_object)
         elif user_input == '2':
-            self.unpark_vehicle()
-            self.employee_functionality()
+            employee_object.unpark_vehicle(self.parking_spaces,self.vehicles,self.bookings,self.do_billing)
+            self.employee_functionality(employee_object)
         elif user_input == '3':
             self.parking_spaces[0].display_parking()
-            self.employee_functionality()
+            self.employee_functionality(employee_object)
         elif user_input == '4':
             self.main_page()
         else:
             print(Back.RED+"    Please enter valid input    ")
-            self.employee_functionality()
+            self.employee_functionality(employee_object)
 
     def employee_login(self,admin_object):
         employees=admin_object.employees
         print(Back.YELLOW +'   Please Enter Employee id :   ')
         employee_id=input("-> ")
+        employee_object=False
         employee_password=""
         for employee in employees:
             if(employee.E_id==employee_id):
                 employee_password=employee.E_password
+                employee_object=employee
         password=""
         if(employee_password==""):
             print(Back.RED +'Invalid Credentials')
-            self.employee_login(admin_object)
+            return self.employee_login(admin_object)
         else:
-            
             print(Back.YELLOW +'   Please Enter Password :      ')
             password = getpass.getpass()
         if(password==employee_password):
-            return True
+            return employee_object
         else:
             print(Back.RED+"      Invalid Password          ")
             self.login()
@@ -282,7 +184,7 @@ class parkingSystem:
                 self.login()
         elif user_input2 == '2':
             if(self.employee_login(self.admin_object)):
-                self.employee_functionality()
+                self.employee_functionality(self.employee_login(self.admin_object))
         elif user_input2=='3':
             self.main_page()
         else:
@@ -305,8 +207,8 @@ class parkingSystem:
         elif user_input == '3':
             print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to get location of ")
             V_no=input("-> ")
-            current_cost=self.do_billing(V_no.upper())
-            print(Back.GREEN + f"Your Current vehicle charges are {current_cost} ")
+            current_cost= self.do_billing(V_no.upper())
+            print(Back.GREEN + f"Your Current Vechile charges are {current_cost} ")
             self.main_page()
         elif user_input == '4':
             exit()
