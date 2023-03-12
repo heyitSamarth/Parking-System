@@ -102,8 +102,10 @@ class parkingSystem:
         print(Back.CYAN + "+------------------------------+")
         user_input = input("-> ")
         if user_input == '1':
-            employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
+            employee_object.random_park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
             self.employee_functionality(employee_object)
+            # employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
+            # self.employee_functionality(employee_object)
         elif user_input == '2':
             employee_object.unpark_vehicle(self.parking_spaces,self.vehicles,self.bookings,self.do_billing)
             self.employee_functionality(employee_object)

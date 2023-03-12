@@ -17,12 +17,12 @@ class employee(user):
         self.E_contact=E_contact
         self.E_id=E_id
         self.E_password=E_password
+
     def employee_detail(self):
         print("Employee Name       = "+ self.E_name)
         print("Employee Contact    = "+ self.E_contact)
         print("Employee ID         = "+ self.E_id)
         print("Employee Password   = "+ self.E_password)
-    
     
     def unpark_vehicle(self,parking_spaces,vehicles,bookings,do_billing):
         print(Back.YELLOW + "Enter Vehicle no of Vehicle u want to Unpark")
@@ -61,6 +61,73 @@ class employee(user):
         bookings.pop(i-1)
         print(Back.GREEN +"Vechile unparked ")
         print(Back.BLUE +"Thankyou for Visiting")
+
+
+    def check_empty_space(self,parking_spaces):
+        building_no=""
+        floor_no=""
+        row_no=""
+        column_no=""
+        for  building in range(len(parking_spaces[0].parking_space)):
+            for floor in range(len(parking_spaces[0].parking_space[building])):
+                for row in range(len(parking_spaces[0].parking_space[building][floor])):
+                    for column in range(len(parking_spaces[0].parking_space[building][floor][row])):
+                        if(parking_spaces[0].parking_space[building][floor][row][column]==0):
+                            return(building,floor,row,column)
+    
+    def random_park_vehicle(self,parking_spaces,vehicles,do_booking,add_vehicle):
+
+        (building_no,floor_no,row_no,column_no)=self.check_empty_space(parking_spaces)
+        print(Back.GREEN +f"Vechile parked at floor {floor_no} of Building {building_no} ")                  
+        parking_spaces[0].view_slots(building_no,floor_no,row_no,column_no)
+        V_no=  input("Please Enter Vehicle no            -> ")
+        V_no=V_no.upper()
+        vehicle_data_present=False
+        vehicle_object=""
+        for vehicle in vehicles:
+            if(vehicle.vehicle_no==V_no):
+                vehicle_data_present=True
+                vehicle_object=vehicle
+
+        if(vehicle_data_present==False):
+            print(Back.CYAN + "+------------------------+")
+            print(Back.CYAN + "|  1- Car (LMV)          |")
+            print(Back.CYAN + "|  2- Truck (HMV)        |")
+            print(Back.CYAN + "|  3- Bike (MC)          |")
+            print(Back.CYAN + "+------------------------+")
+            V_type_option=0
+            while (V_type_option!='1' and  V_type_option!='2' and V_type_option!='3'):
+                V_type_option=input("Please Select Vehicle type         -> ")
+            if(V_type_option=='1'):
+                V_type="LMV"
+            if(V_type_option=='2'):
+                V_type="HMV"
+            if(V_type_option=='3'):
+                V_type="MC"
+            V_owner=str(input("Please Enter Vehicle owner         -> "))
+            V_colour=   input("Please enter Vehicle colour        -> ")
+            V_brand=    input("Please enter Vehicle brand         -> ")
+            print(Back.YELLOW + "Please Verify the Information")
+            print("Vehicle no       = "+ V_no)
+            print("Vehicle type     = "+ V_type)
+            print("Vehicle owner    = "+ V_owner)
+            print("Vehicle colour   = "+ V_colour)
+            print("Vehicle brand    = "+ V_brand)
+            input("Press Enter to continue or CTRL+C to Break Operation")
+            vehicle_object=add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
+            print(Back.GREEN + "Vehicle information stored")
+        
+        if(vehicle_data_present==True):
+            if(vehicle_object.vehicle_parked=="P"):
+                print(Back.RED + "Vehicle Already Parked ")
+                return
+            print(Back.GREEN + "Vehicle information already stored")
+            V_no=vehicle_object.vehicle_no
+            V_type=vehicle_object.vehicle_type
+        booking=do_booking(V_no,V_type,building_no,floor_no,row_no,column_no)
+        booking.show_booking()
+        parking_spaces[0].parking_space[building_no][floor_no][row_no][column_no]=1	     
+        vehicle_object.park_vehicle()
 
     def park_vehicle(self,parking_spaces,vehicles,do_booking,add_vehicle):
         (building_no,floor_no)=parking_spaces[0].display_parking()
@@ -120,7 +187,6 @@ class employee(user):
         booking.show_booking()
         parking_spaces[0].parking_space[building_no][floor_no][row][column]=1	     
         vehicle_object.park_vehicle()
-
 
 
 class admin(user):
