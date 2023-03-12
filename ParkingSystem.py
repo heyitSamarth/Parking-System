@@ -102,7 +102,7 @@ class parkingSystem:
         print(Back.CYAN + "+------------------------------+")
         user_input = input("-> ")
         if user_input == '1':
-            employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking)
+            employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
             self.employee_functionality(employee_object)
         elif user_input == '2':
             employee_object.unpark_vehicle(self.parking_spaces,self.vehicles,self.bookings,self.do_billing)
@@ -183,8 +183,9 @@ class parkingSystem:
                 print(Back.RED+"      Invalid Password          ")
                 self.login()
         elif user_input2 == '2':
-            if(self.employee_login(self.admin_object)):
-                self.employee_functionality(self.employee_login(self.admin_object))
+            employee_object=self.employee_login(self.admin_object)
+            if(employee_object):
+                self.employee_functionality(employee_object)
         elif user_input2=='3':
             self.main_page()
         else:

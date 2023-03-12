@@ -48,7 +48,7 @@ class employee(user):
 
         print(Back.GREEN +f"Charges for vehicle no {V_no} are {charges}$")
         input("Press Enter if payment Recived")
-        self.parking_spaces[0].parking_space[building_no][floor_no][row][column]=0
+        parking_spaces[0].parking_space[building_no][floor_no][row][column]=0
         for vehicle_object in vehicles:
             if(vehicle_object.vehicle_no==V_no):
                 vehicle_object.unpark_vehicle()
@@ -62,7 +62,7 @@ class employee(user):
         print(Back.GREEN +"Vechile unparked ")
         print(Back.BLUE +"Thankyou for Visiting")
 
-    def park_vehicle(self,parking_spaces,vehicles,do_booking):
+    def park_vehicle(self,parking_spaces,vehicles,do_booking,add_vehicle):
         (building_no,floor_no)=parking_spaces[0].display_parking()
         print(Back.YELLOW +  '   Please Enter row you want to select    : ')
         row = int(input("-> "))
@@ -70,7 +70,7 @@ class employee(user):
         column = int(input("-> "))
         if(parking_spaces[0].parking_space[building_no][floor_no][row][column]==1):
             print(Back.RED + "Slot already booked ")
-            self.park_vehicle()
+            return
         parking_spaces[0].view_slots(building_no,floor_no,row,column)
         V_no=  input("Please Enter Vehicle no            -> ")
         V_no=V_no.upper()
@@ -106,13 +106,14 @@ class employee(user):
             print("Vehicle colour   = "+ V_colour)
             print("Vehicle brand    = "+ V_brand)
             input("Press Enter to continue or CTRL+C to Break Operation")
-            vehicle_object=self.add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
+            vehicle_object=add_vehicle(V_no,V_type,V_owner,V_colour,V_brand)
             print(Back.GREEN + "Vehicle information stored")
         
         if(vehicle_data_present==True):
             if(vehicle_object.vehicle_parked=="P"):
                 print(Back.RED + "Vehicle Already Parked ")
-                self.employee_functionality()
+                return
+            print(Back.GREEN + "Vehicle information already stored")
             V_no=vehicle_object.vehicle_no
             V_type=vehicle_object.vehicle_type
         booking=do_booking(V_no,V_type,building_no,floor_no,row,column)
