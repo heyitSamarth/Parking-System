@@ -62,7 +62,6 @@ class employee(user):
         print(Back.GREEN +"Vechile unparked ")
         print(Back.BLUE +"Thankyou for Visiting")
 
-
     def check_empty_space(self,parking_spaces):
         building_no=""
         floor_no=""

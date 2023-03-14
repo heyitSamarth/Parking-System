@@ -95,24 +95,26 @@ class parkingSystem:
 
     def employee_functionality(self,employee_object):
         print(Back.CYAN + "+------------------------------+")
-        print(Back.CYAN + "|  1- Park a Vehicle           |")
-        print(Back.CYAN + "|  2- Unpark a Vehicle         |")
-        print(Back.CYAN + "|  3- Display Parking space    |")
-        print(Back.CYAN + "|  4- Logout                   |")
+        print(Back.CYAN + "|  1- Park a Vehicle (specific)|")
+        print(Back.CYAN + "|  2- Park a Vehicle (random)  |")
+        print(Back.CYAN + "|  3- Unpark a Vehicle         |")
+        print(Back.CYAN + "|  4- Display Parking space    |")
+        print(Back.CYAN + "|  5- Logout                   |")
         print(Back.CYAN + "+------------------------------+")
         user_input = input("-> ")
         if user_input == '1':
+            employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
+            self.employee_functionality(employee_object)
+        elif user_input == '2':
             employee_object.random_park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
             self.employee_functionality(employee_object)
-            # employee_object.park_vehicle(self.parking_spaces,self.vehicles,self.do_booking,self.add_vechile)
-            # self.employee_functionality(employee_object)
-        elif user_input == '2':
+        elif user_input == '3':
             employee_object.unpark_vehicle(self.parking_spaces,self.vehicles,self.bookings,self.do_billing)
             self.employee_functionality(employee_object)
-        elif user_input == '3':
+        elif user_input == '4':
             self.parking_spaces[0].display_parking()
             self.employee_functionality(employee_object)
-        elif user_input == '4':
+        elif user_input == '5':
             self.main_page()
         else:
             print(Back.RED+"    Please enter valid input    ")
