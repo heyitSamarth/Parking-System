@@ -10,9 +10,9 @@ from pickle import load,dump
 warnings.filterwarnings("ignore")
 colorama.init(autoreset=True)
 
-class parkingSpace():
+class ParkingSpace():
     def __init__(self):
-        self.parking_space=[[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]], [[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]], [[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]]]
+        self.parking_space=[]
     
     def view_buildings(self):
         for i in range(len(self.parking_space)):
@@ -30,54 +30,47 @@ class parkingSpace():
         for i in range(len(self.parking_space)):
             print(f"floors {len(self.parking_space[i])}",end=" ")
         print()
+    
     def view_floors(self,building_no):
         print(f"------------")
         for i in reversed(range(len(self.parking_space[building_no]))):
             print(f"|floor no {i}|")
             print(f"------------")
-    def view_slots(self,building_no,floor_no,row="@",column="@"):
+    
+    def view_slots(self,building_no,floor_no,slot_type_selected="@",row="@",column="@"):
         print()
         rcount=0
         for rows in self.parking_space[building_no][floor_no]:
-            print(f"{rcount}-> | ",end=" ")
-            
+            print(f" | ",end=" ")
             count=0
             for slot in rows:
                 if(row==rcount and column==count):
-                    print(Back.RED+f"[{count}]",end=" ")
+                    print(Back.RED+f"[{slot.slot_id}]",end=" ")
                     print(" ",end=" ")
                     count=count+1
-                elif(slot==1 ):
-                    print(Back.MAGENTA+f"[{count}]",end=" ")
+                elif(slot.reserved==True):
+                    print(Back.MAGENTA+f"[{slot.slot_id}]",end=" ")
+                    print(" ",end=" ")
+                    count=count+1
+                elif(slot.slot_type==slot_type_selected):
+                    print(Back.WHITE+f"[{slot.slot_id}]",end=" ")
                     print(" ",end=" ")
                     count=count+1
                 else:
-                    print(f"[{count}]",end=" ")
+                    print(f"[{slot.slot_id}]",end=" ")
                     print(" ",end=" ")
                     count=count+1
             print("|")
             rcount=rcount+1
         print()	
-
-    def display_parking(self):
+    
+    def display_parking(self,vehicle_type="@"):
         self.view_buildings()
         print(Back.YELLOW +  '   Please Enter Building no :   ')
         building_no = int(input("-> "))
         self.view_floors(building_no)
         print(Back.YELLOW +  '   Please Enter floor no :   ')
         floor_no = int(input("-> "))
-        self.view_slots(building_no,floor_no)
+        self.view_slots(building_no,floor_no,vehicle_type,)
         return(building_no,floor_no)
 
-# class Building():
-#     def __init__(self):
-#         self.floor=[]
-
-# class floor():
-#     def __init__(self):
-#         self.slot=[]
-    
-
-# class slot():
-#     def __init__(self):
-#         self.is_empty=True

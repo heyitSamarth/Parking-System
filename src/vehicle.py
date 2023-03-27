@@ -1,4 +1,4 @@
-class vehicle():
+class Vehicle():
     def __init__(self,vehicle_no,vehicle_type,vehicle_owner,vehicle_colour,vehicle_brand):
         self.vehicle_no=vehicle_no
         self.vehicle_type=vehicle_type
