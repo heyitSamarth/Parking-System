@@ -1,0 +1,2 @@
+docker build -t rest-api .
+MSYS_NO_PATHCONV=1 docker run -dp 5005:5000 -w /app -v "$(pwd):/app" rest-api
