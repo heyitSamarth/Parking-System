@@ -9,6 +9,6 @@ class VehicleModel(db.Model):
     vehicle_owner = db.Column(db.String(80), nullable=False)
     vehicle_colour = db.Column(db.String(80),  nullable=False)
     vehicle_description = db.Column(db.String(80), nullable=False)
-    vehicle_status=db.Column(db.Boolean,nullable=False)
+    is_parked=db.Column(db.Boolean,nullable=False,default=False)
     bookings = db.relationship("BookingModel", back_populates="vehicle", lazy="dynamic", cascade="all, delete")
     

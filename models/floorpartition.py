@@ -6,4 +6,5 @@ class FloorPartitionModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     floor_partition_no = db.Column(db.Integer, unique=True, nullable=False)
     floor_id=db.Column(db.Integer, db.ForeignKey("floors.id"))
-    slots=db.relationship("SlotModel",backref="floor_partitions",lazy="dynamic", cascade="all, delete")
+    floor=db.relationship("FloorModel",back_populates="floor_partitions")
+    slots=db.relationship("SlotModel",back_populates="floor_partition",lazy="dynamic", cascade="all, delete")

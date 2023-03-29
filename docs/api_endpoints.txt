@@ -1,0 +1,170 @@
+post /login
+req = username,password,role
+res = jwt token with role and user id inside it 
+
+
+#ADMIN
+
+
+{ADD VIEW AND MODIFY EMPLOYEEE}
+
+post /admin/employee
+req = employee data 
+res = {employee added}
+
+get /admin/employee
+res= {all employee data}
+
+get /admin/employee/<id>
+res={employee data}
+
+put /admin/employee/<id>
+req = employee data
+res = {employee updated}
+
+del /admin/employee/<id>
+res ={employee deleted }
+
+
+
+{ADD VIEW MODIFY PARKING SPACE}'
+
+post /admin/building
+req = {building data }
+res ={building added}
+
+GET /admin/building
+RES={all  building data}
+
+get  /admin/building/<id>
+res = { specific building data }
+
+Put  /admin/building/<id>
+res = {update building data}
+res = { updated }
+
+del  /admin/building/<id>
+res = { delete building data }
+
+
+post /admin/floor
+req = {floor data }
+res ={floor added}
+
+GET /admin/floor
+RES={all  floors data}
+
+get  /admin/floor/<id>
+res = { specific floor data }
+
+Put  /admin/flooor/<id>
+res = {update floor data}
+res = { updated }
+
+del  /admin/floor/<id>
+res = { delete floor data }
+
+
+post /admin/floorintersection
+req = {floorintersection data }
+res ={floorintersection added}
+
+GET /admin/floorintersection
+RES={all  floorintersection data}
+
+get  /admin/floorintersection/<id>
+res = { specifloorintersectionfic data }
+
+Put  /admin/floorintersection/<id>
+res = {update floorintersection data}
+res = { updated }
+
+del  /admin/flofloorintersectionor/<id>
+res = { delete floorintersection data }
+
+post /admin/slot
+req = {slot data }
+res ={slot added}
+
+GET /admin/slot
+RES={all  slot data}
+
+get  /admin/slot/<id>
+res = { slot data }
+
+Put  /admin/slot/<id>
+req = {update slot data}
+res = { updated }
+
+del  /admin/slot/<id>
+res = { delete slot data }
+
+
+
+
+
+
+#EMPLOYEEE
+
+{ADD vehicle}
+
+post /employee/vehicle
+req = {vehicle data }
+res ={vehicle added}
+
+GET /employee/vehicle
+RES={all vehicle data}
+
+get  /employee/vehicle/<id>
+res = { specific vehicle data }
+
+Put  /employee/vehicle/<id>
+res = {update vehicle data}
+res = { updated }
+
+del  /employee/vehicle/<id>
+res = { delete vehicle data }
+
+
+{DO BOOKING }
+
+post /employee/booking
+req = {booking data }
+res ={booking added}
+
+GET /employee/booking
+RES={all booking data}
+
+get  /employee/booking/<id>
+res = { specific booking data }
+
+Put  /employee/booking/<id>
+res = {update booking data}
+res = { updated }
+
+del  /employee/booking/<id>
+res = { delete booking data }
+
+
+
+{DO BILLING}
+
+post /employee/billing
+req = {booking data }
+res ={billing added}
+
+GET /employee/billing
+RES={all billing data}
+
+get  /employee/billing/<id>
+res = { specific billing data }
+
+Put  /employee/billing/<id>
+res = {update billing data}
+res = { updated }
+
+del  /employee/billing/<id>
+res = { delete billing data }
+
+
+
