@@ -31,6 +31,9 @@ class VehicleUpdateSchema(Schema):
     vehicle_colour = fields.Str(required=True)
     vehicle_description = fields.Str(required=True)
 
+class BuildingSchema(Schema):
+    id =  fields.Int(dump_only=True)
+    building_no =fields.Int(required=True)
 
 
 # class PlainItemSchema(Schema):

@@ -75,7 +75,7 @@ class User(MethodView):
 
 
 @blp.route("/user")
-class User(MethodView):
+class AllUser(MethodView):
     @jwt_required()
     @blp.response(200, UserSchema(many=True))
     def get(self):

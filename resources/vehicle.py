@@ -1,11 +1,10 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint,abort #Divide api in multiple segments
-from passlib.hash import pbkdf2_sha256
 from Schemas import VehicleSchema,VehicleUpdateSchema
 from models import VehicleModel
 from db import db
-from flask_jwt_extended import create_access_token,jwt_required,get_jwt
-from blocklist import BLOCKLSIT
+from flask_jwt_extended import jwt_required,get_jwt
+
 
 blp =Blueprint("vehicles","Vehicles",__name__,description="Operations on Vehicles")
 
