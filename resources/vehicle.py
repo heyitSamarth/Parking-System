@@ -10,17 +10,17 @@ blp =Blueprint("vehicles","Vehicles",__name__,description="Operations on Vehicle
 
 
 @blp.route("/vehicle")
-class vehicleRegister(MethodView):
+class Vehicle(MethodView):
     @blp.arguments(VehicleSchema)
     def post(Self,vehicle_data):
-        if VehicleModel.query.filter(VehicleModel.vehicle_number==vehicle_data["vehicle_number"]).first():
+        if VehicleModel.query.filter(VehicleModel.number==vehicle_data["number"]).first():
             abort(409,message="A vehicle with same vehicle number already exists")
         vehicle=VehicleModel(
-            vehicle_number=vehicle_data["vehicle_number"],
-            vehicle_type=vehicle_data["vehicle_type"],
-            vehicle_owner=vehicle_data["vehicle_owner"],
-            vehicle_colour = vehicle_data["vehicle_colour"],
-            vehicle_description=vehicle_data["vehicle_description"]
+            number=vehicle_data["number"],
+            type=vehicle_data["type"],
+            owner=vehicle_data["owner"],
+            colour = vehicle_data["colour"],
+            description=vehicle_data["description"]
         )
         db.session.add(vehicle)
         db.session.commit()
@@ -33,10 +33,10 @@ class vehicleRegister(MethodView):
 
 
 @blp.route("/vehicle/<vehicle_number>")
-class vehicle(MethodView):
+class VehicleOperation(MethodView):
     @blp.response(200, VehicleSchema)
     def get(self, vehicle_number):
-        vehicle = VehicleModel.query.filter(VehicleModel.vehicle_number==vehicle_number).first()
+        vehicle = VehicleModel.query.filter(VehicleModel.number==vehicle_number).first()
         if vehicle :
             return vehicle
         else :
@@ -47,7 +47,7 @@ class vehicle(MethodView):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
             abort(401,message="admin privilege required ")
-        vehicle = VehicleModel.query.filter(VehicleModel.vehicle_number==vehicle_number).first()
+        vehicle = VehicleModel.query.filter(VehicleModel.number==vehicle_number).first()
         if vehicle :
             db.session.delete(vehicle)
             db.session.commit()
@@ -62,11 +62,11 @@ class vehicle(MethodView):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
             abort(401,message="admin privilege required ")
-        vehicle = VehicleModel.query.filter(VehicleModel.vehicle_number==vehicle_number).first()
+        vehicle = VehicleModel.query.filter(VehicleModel.number==vehicle_number).first()
         if vehicle:
-            vehicle.vehicle_owner=vehicle_data["vehicle_owner"]
-            vehicle.vehicle_colour = vehicle_data["vehicle_colour"]
-            vehicle.vehicle_description=vehicle_data["vehicle_description"]
+            vehicle.owner=vehicle_data["owner"]
+            vehicle.colour = vehicle_data["colour"]
+            vehicle.description=vehicle_data["description"]
         else:
             abort(401,message="Enter correct vehicle number")
         db.session.add(vehicle)

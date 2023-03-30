@@ -6,26 +6,50 @@ from db import db
 from flask_jwt_extended import jwt_required,get_jwt
 
 
-blp =Blueprint("buildings","Buildings",__name__,description="Operations on users")
+blp =Blueprint("buildings","Buildings",__name__,description="Operations on buildings")
 
 @blp.route("/building")
-class building(MethodView):
+class Building(MethodView):
     @blp.arguments(BuildingSchema)
-    def post(Self,vehicle_data):
-        if BuildingModel.query.filter(BuildingModel.vehicle_number==vehicle_data["vehicle_number"]).first():
-            abort(409,message="A vehicle with same vehicle number already exists")
-        vehicle=VehicleModel(
-            vehicle_number=vehicle_data["vehicle_number"],
-            vehicle_type=vehicle_data["vehicle_type"],
-            vehicle_owner=vehicle_data["vehicle_owner"],
-            vehicle_colour = vehicle_data["vehicle_colour"],
-            vehicle_description=vehicle_data["vehicle_description"]
+    def post(Self,building_data):
+        if BuildingModel.query.filter(BuildingModel.number==building_data["number"]).first():
+            abort(409,message="A building with same building no already exists")
+        building=BuildingModel(
+            number=building_data["number"]
         )
-        db.session.add(vehicle)
+        db.session.add(building)
         db.session.commit()
-        return {"message":"vehicle created Succesfully"},201
+        return {"message":"building created Succesfully"},201
 
-    @blp.response(200, VehicleSchema(many=True))
+    @blp.response(200, BuildingSchema(many=True))
     def get(self):
-        vehicle = VehicleModel.query.all()
-        return vehicle
+        building = BuildingModel.query.all()
+        return building
+
+@blp.route("/building/<int:building_id>")
+class BuildingOperation(MethodView):
+    @jwt_required()
+    @blp.response(200, BuildingSchema)
+    def get(self, building_id):
+        jwt=get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401,message="admin privilege required ")
+        building = BuildingModel.query.filter(BuildingModel.id==building_id).first()
+        if building :
+            return building
+        else :
+            abort(401,message="Plz enter correct Building id")
+    
+    @jwt_required()
+    def delete(self, building_id):
+        jwt=get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401,message="admin privilege required ")
+        building = BuildingModel.query.filter(BuildingModel.id==building_id).first()
+        if building :
+            db.session.delete(building)
+            db.session.commit()
+            return {"message": "building deleted."}, 200
+        else :
+            abort(401,message="Plz enter correct building number")
+

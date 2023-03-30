@@ -8,8 +8,10 @@ from blocklist import BLOCKLSIT
 import models
 
 
-# from resources.item import blp as ItemBlueprint
-# from resources.store import blp as StoreBlueprint
+from resources.floor import blp as FloorBlueprint
+from resources.floorpartition import blp as FloorPartitionBlueprint
+from resources.slot import blp as SlotBlueprint
+from resources.building import blp as BuildingBlueprint
 from resources.vehicle import blp as VehicleBlueprint
 from resources.user import blp as UserBlueprint
 
@@ -79,9 +81,8 @@ def create_app(db_url=None):
         )
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(VehicleBlueprint)
+    api.register_blueprint(BuildingBlueprint)
+    api.register_blueprint(FloorBlueprint)
+    api.register_blueprint(FloorPartitionBlueprint)
+    api.register_blueprint(SlotBlueprint)
     return app
-
-# api.register_blueprint(ItemBlueprint)
-# api.register_blueprint(StoreBlueprint)
-# api.register_blueprint(TagBlueprint)
-# api.register_blueprint(UserBlueprint)

@@ -19,21 +19,39 @@ class UserUpdateSchema(Schema):
 
 class VehicleSchema(Schema):
     id = fields.Int(dump_only=True)
-    vehicle_number = fields.Str(required=True)
-    vehicle_type = fields.Str(required=True)
-    vehicle_owner = fields.Str(required=True)
-    vehicle_colour = fields.Str(required=True)
-    vehicle_description = fields.Str(required=True)
+    number = fields.Str(required=True)
+    type = fields.Str(required=True)
+    owner = fields.Str(required=True)
+    colour = fields.Str(required=True)
+    description = fields.Str(required=True)
     is_parked=fields.Bool(dump_only=True)
 
 class VehicleUpdateSchema(Schema):
-    vehicle_owner = fields.Str(required=True)
-    vehicle_colour = fields.Str(required=True)
-    vehicle_description = fields.Str(required=True)
+    owner = fields.Str(required=True)
+    colour = fields.Str(required=True)
+    description = fields.Str(required=True)
 
 class BuildingSchema(Schema):
     id =  fields.Int(dump_only=True)
-    building_no =fields.Int(required=True)
+    number =fields.Int(required=True)
+
+class FloorSchema(Schema):
+    id =  fields.Int(dump_only=True)
+    number =fields.Int(dump_only=True)
+    building_id=fields.Int(required=True)
+
+class FloorPartitionSchema(Schema):
+    id =  fields.Int(dump_only=True)
+    number =fields.Int(dump_only=True)
+    floor_id=fields.Int(required=True)
+
+class SlotSchema(Schema):
+    id =  fields.Int(dump_only=True)
+    number =fields.Int(dump_only=True)
+    floor_partition_id=fields.Int(required=True)
+    reserved=fields.Bool(dump_only=True)
+    type=fields.Str(required=True)
+
 
 
 # class PlainItemSchema(Schema):
