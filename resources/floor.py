@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint,abort #Divide api in multiple segments
 from Schemas import FloorSchema
-from models import FloorModel
+from models import FloorModel,BuildingModel
 from db import db
 from flask_jwt_extended import jwt_required,get_jwt
 
@@ -12,19 +12,22 @@ blp =Blueprint("floors","Floors",__name__,description="Operations on floors")
 class Floor(MethodView):
     @blp.arguments(FloorSchema)
     def post(Self,floor_data):
-        floornumber=FloorModel.query.filter(FloorModel.building_id==floor_data["building_id"]).count()
-            
-        # <- if user gives floor number ->
-        # if FloorModel.query.filter(FloorModel.number==floor_data["number"] , FloorModel.building_id==floor_data["building_id"]).first():
-        #     abort(409,message="A floor with same floor no already exists in Building ")
-        
-        floor=FloorModel(
-            number=floornumber,
-            building_id=floor_data["building_id"]
-        )
-        db.session.add(floor)
-        db.session.commit()
-        return {"message":"floor created Succesfully"},201
+        if BuildingModel.query.filter(BuildingModel.id==floor_data["building_id"]).first():
+            floornumber=FloorModel.query.filter(FloorModel.building_id==floor_data["building_id"]).count()
+                
+            # <- if user gives floor number ->
+            # if FloorModel.query.filter(FloorModel.number==floor_data["number"] , FloorModel.building_id==floor_data["building_id"]).first():
+            #     abort(409,message="A floor with same floor no already exists in Building ")
+
+            floor=FloorModel(
+                number=floornumber,
+                building_id=floor_data["building_id"]
+            )
+            db.session.add(floor)
+            db.session.commit()
+            return {"message":"floor created Succesfully"},201
+        else:
+            abort(401,message="Plz enter correct Building id")
 
     @blp.response(200, FloorSchema(many=True))
     def get(self):
@@ -35,8 +38,14 @@ class Floor(MethodView):
 class FloorInBuilding(MethodView):
     @blp.response(200, FloorSchema(many=True))
     def get(self,building_id):
-        floors=FloorModel.query.filter(FloorModel.building_id==building_id)
-        return floors
+        floors=FloorModel.query.filter(FloorModel.building_id==building_id).all()
+        if floors:
+            return floors
+        else:
+            abort(401,message="Plz enter correct Building id")
+
+        
+    
     
 @blp.route("/floor/<int:floor_id>")
 class FloorOperation(MethodView):

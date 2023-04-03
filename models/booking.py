@@ -1,5 +1,5 @@
 from db import db
-
+from datetime import datetime
 from sqlalchemy.sql import func
 
 class BookingModel(db.Model):
@@ -13,7 +13,7 @@ class BookingModel(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey("users.id"))
     user=db.relationship("UserModel", back_populates="bookings")
 
-    park_in_time= db.Column(db.DateTime(timezone=True), server_default=func.now(),nullable=False)
+    park_in_time= db.Column(db.DateTime(timezone=True), default=datetime.now(),nullable=False)
     park_out_time= db.Column(db.DateTime(timezone=True),nullable=True)
 
     billing = db.relationship("BillingModel", back_populates="booking", lazy="dynamic", cascade="all, delete")
