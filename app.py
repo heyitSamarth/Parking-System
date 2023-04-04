@@ -16,6 +16,7 @@ from resources.vehicle import blp as VehicleBlueprint
 from resources.user import blp as UserBlueprint
 from resources.booking import blp as BookingBlueprint
 from resources.billing import blp as BillingBlueprint
+from resources.transaction import blp as TransactionBlueprint
 
 def create_app(db_url=None):
     app = Flask(__name__)
@@ -89,4 +90,5 @@ def create_app(db_url=None):
     api.register_blueprint(SlotBlueprint)
     api.register_blueprint(BookingBlueprint)
     api.register_blueprint(BillingBlueprint)
+    api.register_blueprint(TransactionBlueprint)
     return app

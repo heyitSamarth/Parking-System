@@ -16,7 +16,6 @@ class UserDetailSchema(Schema):
     role=fields.Str(required=True)
     username = fields.Str(required=True)
 
-
 class UserUpdateSchema(Schema):
     name=fields.Str(required=True)
     contact=fields.Int(required=True)
@@ -49,32 +48,43 @@ class VehicleUpdateSchema(Schema):
 class PlainBuildingSchema(Schema):
     id =  fields.Int(dump_only=True)
     number =fields.Int(required=True)
-class PlainFloorSchema(Schema):
+
+class BasicFloorSchema(Schema):
     id =  fields.Int(dump_only=True)
     number =fields.Int(dump_only=True)
 
-class PlainFloorPartitionSchema(Schema):
+class PlainFloorSchema(BasicFloorSchema):
+    building = fields.Nested(PlainBuildingSchema(), dump_only=True)
+
+class BasicFloorPartitionSchema(Schema):
     id =  fields.Int(dump_only=True)
     number =fields.Int(dump_only=True)
 
-class PlainSlotSchema(Schema):
+class PlainFloorPartitionSchema( BasicFloorPartitionSchema):
+    floor= fields.Nested(PlainFloorSchema(), dump_only=True)
+
+class BasicSlotSchema(Schema):
     id =  fields.Int(dump_only=True)
     number =fields.Int(dump_only=True)
     reserved=fields.Bool(dump_only=True)
     type=fields.Str(required=True)
 
+
+class PlainSlotSchema(BasicSlotSchema):
+    floor_partition=fields.Nested(PlainFloorPartitionSchema(), dump_only=True)
+
 class BuildingSchema(PlainBuildingSchema):
-    floors = fields.List(fields.Nested(PlainFloorSchema), dump_only=True)
+    floors = fields.List(fields.Nested(BasicFloorSchema), dump_only=True)
 
 class FloorSchema(PlainFloorSchema):
     building_id=fields.Int(required=True)
-    building = fields.Nested(PlainBuildingSchema(), dump_only=True)
-    floor_partitions=fields.List(fields.Nested(PlainFloorPartitionSchema), dump_only=True)
+    # building = fields.Nested(PlainBuildingSchema(), dump_only=True)
+    floor_partitions=fields.List(fields.Nested(BasicFloorPartitionSchema), dump_only=True)
 
 class FloorPartitionSchema(PlainFloorPartitionSchema):
     floor_id=fields.Int(required=True)
-    floor= fields.Nested(PlainFloorSchema(), dump_only=True)
-    slots=fields.List(fields.Nested(PlainSlotSchema), dump_only=True)
+    
+    slots=fields.List(fields.Nested(BasicSlotSchema), dump_only=True)
 
 class SlotSchema(PlainSlotSchema):
     floor_partition_id=fields.Int(required=True)
@@ -94,14 +104,20 @@ class ShowBookingSchema(BookingSchema):
     slot=fields.Nested(PlainSlotSchema(), dump_only=True)
     user=fields.Nested(UserDetailSchema(), dump_only=True)
     billing=fields.List(fields.Nested(PlainBillingSchema), dump_only=True)
+    # billing=fields.Nested(PlainBillingSchema(), dump_only=True)
+
+
+class PlainTransactionSchema(Schema):
+    id = fields.Int(dump_only=True)
+    billing_id=fields.Int(required=True)
+    amount=fields.Int(required=True)
+    amount_pending=fields.Int(dump_only=True)
+    payment_type=fields.Str(required=True)
 
 class BillingSchema(PlainBillingSchema):
     booking=fields.Nested(BookingSchema(), dump_only=True)
-
-
-
-
-
+    user=fields.Nested(UserDetailSchema(), dump_only=True)
+    transactions=fields.List(fields.Nested(PlainTransactionSchema), dump_only=True)
 
 
 class AddBookingSchema(BookingSchema):
@@ -113,3 +129,6 @@ class BookingUpdateSchema(Schema):
     slot_id=fields.Int(required=True)
 
 
+
+class TransactionSchema(PlainTransactionSchema):
+    billing=fields.Nested(PlainBillingSchema(), dump_only=True)

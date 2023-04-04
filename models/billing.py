@@ -12,4 +12,4 @@ class BillingModel(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey("users.id"))
     user=db.relationship("UserModel", back_populates="billings")
 
-    transaction = db.relationship("TransactionModel", back_populates="billing", lazy="dynamic", cascade="all, delete")
+    transactions = db.relationship("TransactionModel", back_populates="billing", lazy="dynamic", cascade="all, delete")

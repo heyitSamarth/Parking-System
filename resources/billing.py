@@ -18,6 +18,8 @@ class Billing(MethodView):
         logged_in_user_id=get_jwt().get("sub")
         booking = BookingModel.query.filter(BookingModel.id==billing_data["booking_id"]).first()
         if booking:
+            if booking.park_out_time:
+                abort(401,message="Billing already done")
             billing=BillingModel(
                 booking_id=billing_data["booking_id"],
                 parking_amount=billing_data["parking_amount"],

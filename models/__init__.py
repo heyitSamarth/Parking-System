@@ -8,3 +8,4 @@ from models.floorpartition import FloorPartitionModel
 from models.slot import SlotModel
 from models.user import UserModel
 from models.booking import BookingModel
+from models.transaction import TransactionModel
