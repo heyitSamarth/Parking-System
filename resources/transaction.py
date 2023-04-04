@@ -21,13 +21,13 @@ class Transactition(MethodView):
                 previous_transaction=TransactionModel.query.filter(BillingModel.id==transaction_data["billing_id"]).order_by(TransactionModel.id.desc()).first()
                 amount_pending=previous_transaction.amount_pending-transaction_data["amount"]
                 if(previous_transaction.amount_pending==0):
-                    abort(401,message="total amount has been paid ")
+                    abort(409,message="total amount has been paid ")
                 if(previous_transaction.amount_pending<transaction_data["amount"]):
-                    abort(401,message="Plz enter correct amount  ")
+                    abort(409,message="Plz enter correct amount  ")
                     
             else:
                 if(billing.parking_amount<transaction_data["amount"]):
-                    abort(401,message="Plz enter correct amount  ")
+                    abort(409,message="Plz enter correct amount  ")
                 amount_pending=billing.parking_amount-transaction_data["amount"]
 
             transaction=TransactionModel(
@@ -40,8 +40,8 @@ class Transactition(MethodView):
             db.session.commit()
             return {"message":"transactition created Succesfully"},201
         else:
-            abort(401,message="Plz enter correct billing id")
-
+            abort(400,message="Plz enter correct billing id")
+    @jwt_required()
     @blp.response(200, TransactionSchema(many=True))
     def get(self):
         transactitions = TransactionModel.query.all()
@@ -50,13 +50,14 @@ class Transactition(MethodView):
 
 @blp.route("/transaction/<transaction_id>")
 class TransactitionOperation(MethodView):
+    @jwt_required()
     @blp.response(200, TransactionSchema)
     def get(self, transaction_id):
         transactition = TransactionModel.query.filter(TransactionModel.id==transaction_id).first()
         if transactition :
             return transactition
         else :
-            abort(401,message="Plz enter correct transaction id")
+            abort(400,message="Plz enter correct transaction id")
     
     @jwt_required()
     def delete(self, transaction_id):
@@ -67,9 +68,9 @@ class TransactitionOperation(MethodView):
         if transaction :
             db.session.delete(transaction)
             db.session.commit()
-            return {"message": "transactition deleted."}, 200
+            return {"message": "transactition deleted."}, 204
         else :
-            abort(401,message="Plz enter correct transactition id")
+            abort(400,message="Plz enter correct transactition id")
 
     # <- Update Transactition ->
     # @jwt_required()

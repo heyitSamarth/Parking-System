@@ -18,7 +18,7 @@ class UserRegister(MethodView):
     def post(Self,user_data):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         if UserModel.query.filter(UserModel.username==user_data["username"]).first():
             abort(409,message="A user with that user name already exists")
         user=UserModel(
@@ -41,7 +41,7 @@ class User(MethodView):
     def get(self, user_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         user = UserModel.query.get_or_404(user_id)
         return user
     
@@ -49,11 +49,11 @@ class User(MethodView):
     def delete(self, user_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         user = UserModel.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
-        return {"message": "User deleted."}, 200
+        return {"message": "User deleted."}, 204
     
     @jwt_required()
     @blp.arguments(UserUpdateSchema)
@@ -61,7 +61,7 @@ class User(MethodView):
     def put(self,user_data,user_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         user = UserModel.query.get(user_id)
         if user:
             user.name=user_data["name"]
@@ -81,7 +81,7 @@ class AllUser(MethodView):
     def get(self):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         user = UserModel.query.all()
         return user
 
@@ -106,4 +106,4 @@ class UserLogout(MethodView):
     def post(self):
         jti=get_jwt()["jti"]
         BLOCKLSIT.add(jti)
-        return {"message":"USer LOgged out"}
+        return {"message":"USer LOgged out"},200

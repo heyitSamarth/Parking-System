@@ -10,6 +10,7 @@ blp =Blueprint("floorpartitions","FloorPartitions",__name__,description="Operati
 
 @blp.route("/floorpartition")
 class FloorPartition(MethodView):
+    @jwt_required()
     @blp.arguments(FloorPartitionSchema)
     def post(Self,floorpartition_data):
         if FloorModel.query.filter(FloorModel.id==floorpartition_data["floor_id"]).first():
@@ -27,8 +28,8 @@ class FloorPartition(MethodView):
             db.session.commit()
             return {"message":"floorpartition created Succesfully"},201
         else:
-            abort(401,message="Plz enter correct floor id")
-
+            abort(400,message="Plz enter correct floor id")
+    @jwt_required()
     @blp.response(200, FloorPartitionSchema(many=True))
     def get(self):
         floorpartitions = FloorPartitionModel.query.all()
@@ -36,37 +37,35 @@ class FloorPartition(MethodView):
     
 @blp.route("/floorpartitions/<int:floor_id>")
 class FloorPartitionInFloor(MethodView):
+    @jwt_required()
     @blp.response(200, FloorPartitionSchema(many=True))
     def get(self,floor_id):
         floorpartitions=FloorPartitionModel.query.filter(FloorPartitionModel.floor_id==floor_id).all()
         if floorpartitions:
             return floorpartitions
         else:
-            abort(401,message="Plz enter correct floor id")
+            abort(400,message="Plz enter correct floor id")
     
 @blp.route("/floorpartition/<int:floorpartition_id>")
 class FloorPartitionOperations(MethodView):
     @jwt_required()
     @blp.response(200, FloorPartitionSchema)
     def get(self, floorpartition_id):
-        jwt=get_jwt()
-        if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
         floorpartition = FloorPartitionModel.query.filter(FloorPartitionModel.id==floorpartition_id).first()
         if floorpartition :
             return floorpartition
         else :
-            abort(401,message="Plz enter correct floorpartition id")
+            abort(400,message="Plz enter correct floorpartition id")
     
     @jwt_required()
     def delete(self, floorpartition_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         floorpartition = FloorPartitionModel.query.filter(FloorPartitionModel.id==floorpartition_id).first()
         if floorpartition :
             db.session.delete(floorpartition)
             db.session.commit()
-            return {"message": "floorpartition deleted."}, 200
+            return {"message": "floorpartition deleted."}, 204
         else :
-            abort(401,message="Plz enter correct floorpartition id")
+            abort(400,message="Plz enter correct floorpartition id")

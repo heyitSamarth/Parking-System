@@ -3,6 +3,7 @@ from flask_smorest import Blueprint,abort #Divide api in multiple segments
 from Schemas import BillingSchema
 from models import BillingModel,BookingModel,VehicleModel,SlotModel
 from db import db
+import sqlalchemy
 from datetime import datetime
 from flask_jwt_extended import jwt_required,get_jwt
 
@@ -19,7 +20,7 @@ class Billing(MethodView):
         booking = BookingModel.query.filter(BookingModel.id==billing_data["booking_id"]).first()
         if booking:
             if booking.park_out_time:
-                abort(401,message="Billing already done")
+                abort(409,message="Billing already done")
             billing=BillingModel(
                 booking_id=billing_data["booking_id"],
                 parking_amount=billing_data["parking_amount"],
@@ -37,8 +38,9 @@ class Billing(MethodView):
 
             return {"message":"billing created Succesfully"},201
         else:
-            abort(401,message="Plz enter correct booking id")
+            abort(400,message="Plz enter correct booking id")
 
+    @jwt_required()
     @blp.response(200, BillingSchema(many=True))
     def get(self):
         billings = BillingModel.query.all()
@@ -47,26 +49,29 @@ class Billing(MethodView):
 
 @blp.route("/billing/<billing_id>")
 class BillingOperation(MethodView):
+    @jwt_required()
     @blp.response(200, BillingSchema)
     def get(self, billing_id):
         billing = BillingModel.query.filter(BillingModel.id==billing_id).first()
         if billing :
             return billing
         else :
-            abort(401,message="Plz enter correct billing id")
+            abort(400,message="Plz enter correct billing id")
     
     @jwt_required()
     def delete(self, billing_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         billing = BillingModel.query.filter(BillingModel.id==billing_id).first()
+        boooking=BookingModel.query.filter(BookingModel.id==billing.booking_id).first()
         if billing :
             db.session.delete(billing)
+            boooking.park_out_time=None
             db.session.commit()
-            return {"message": "billing deleted."}, 200
+            return {"message": "billing deleted."}, 204
         else :
-            abort(401,message="Plz enter correct billing id")
+            abort(400,message="Plz enter correct billing id")
 
     # <- Update Billing ->
     # @jwt_required()

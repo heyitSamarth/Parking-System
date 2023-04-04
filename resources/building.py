@@ -10,6 +10,7 @@ blp =Blueprint("buildings","Buildings",__name__,description="Operations on build
 
 @blp.route("/building")
 class Building(MethodView):
+    @jwt_required()
     @blp.arguments(BuildingSchema)
     def post(Self,building_data):
         if BuildingModel.query.filter(BuildingModel.number==building_data["number"]).first():
@@ -20,7 +21,7 @@ class Building(MethodView):
         db.session.add(building)
         db.session.commit()
         return {"message":"building created Succesfully"},201
-
+    @jwt_required()
     @blp.response(200, BuildingSchema(many=True))
     def get(self):
         building = BuildingModel.query.all()
@@ -31,25 +32,22 @@ class BuildingOperation(MethodView):
     @jwt_required()
     @blp.response(200, BuildingSchema)
     def get(self, building_id):
-        jwt=get_jwt()
-        if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
         building = BuildingModel.query.filter(BuildingModel.id==building_id).first()
         if building :
             return building
         else :
-            abort(401,message="Plz enter correct Building id")
+            abort(400,message="Plz enter correct Building id")
     
     @jwt_required()
     def delete(self, building_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         building = BuildingModel.query.filter(BuildingModel.id==building_id).first()
         if building :
             db.session.delete(building)
             db.session.commit()
-            return {"message": "building deleted."}, 200
+            return {"message": "building deleted."}, 204
         else :
-            abort(401,message="Plz enter correct building number")
+            abort(400,message="Plz enter correct building number")
 

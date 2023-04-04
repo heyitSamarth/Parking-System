@@ -10,6 +10,7 @@ blp =Blueprint("floors","Floors",__name__,description="Operations on floors")
 
 @blp.route("/floor")
 class Floor(MethodView):
+    @jwt_required()
     @blp.arguments(FloorSchema)
     def post(Self,floor_data):
         if BuildingModel.query.filter(BuildingModel.id==floor_data["building_id"]).first():
@@ -27,8 +28,8 @@ class Floor(MethodView):
             db.session.commit()
             return {"message":"floor created Succesfully"},201
         else:
-            abort(401,message="Plz enter correct Building id")
-
+            abort(400,message="Plz enter correct Building id")
+    @jwt_required()
     @blp.response(200, FloorSchema(many=True))
     def get(self):
         floors = FloorModel.query.all()
@@ -36,13 +37,14 @@ class Floor(MethodView):
     
 @blp.route("/floors/<int:building_id>")
 class FloorInBuilding(MethodView):
+    @jwt_required()
     @blp.response(200, FloorSchema(many=True))
     def get(self,building_id):
         floors=FloorModel.query.filter(FloorModel.building_id==building_id).all()
         if floors:
             return floors
         else:
-            abort(401,message="Plz enter correct Building id")
+            abort(400,message="Plz enter correct Building id")
 
         
     
@@ -52,9 +54,6 @@ class FloorOperation(MethodView):
     @jwt_required()
     @blp.response(200, FloorSchema)
     def get(self, floor_id):
-        jwt=get_jwt()
-        if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
         floor = FloorModel.query.filter(FloorModel.id==floor_id).first()
         if floor :
             return floor
@@ -70,6 +69,6 @@ class FloorOperation(MethodView):
         if floor :
             db.session.delete(floor)
             db.session.commit()
-            return {"message": "floor deleted."}, 200
+            return {"message": "floor deleted."}, 204
         else :
             abort(401,message="Plz enter correct floor id")

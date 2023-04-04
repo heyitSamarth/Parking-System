@@ -10,6 +10,7 @@ blp =Blueprint("slot","Slot",__name__,description="Operations on slots")
 
 @blp.route("/slot")
 class SlotPartition(MethodView):
+    @jwt_required()
     @blp.arguments(SlotSchema)
     def post(Self,slot_data):
         if FloorPartitionModel.query.filter(FloorPartitionModel.id==slot_data["floor_partition_id"]).first():
@@ -28,8 +29,8 @@ class SlotPartition(MethodView):
             db.session.commit()
             return {"message":"slot created Succesfully"},201
         else:
-            abort(401,message="Plz enter correct floor partition id")
-
+            abort(400,message="Plz enter correct floor partition id")
+    @jwt_required()
     @blp.response(200, SlotSchema(many=True))
     def get(self):
         slots = SlotModel.query.all()
@@ -37,36 +38,34 @@ class SlotPartition(MethodView):
     
 @blp.route("/slots/<int:floor_partition_id>")
 class SlotInFloorpartition(MethodView):
+    @jwt_required()
     @blp.response(200, SlotSchema(many=True))
     def get(self,floor_partition_id):
         slots=SlotModel.query.filter(SlotModel.floor_partition_id==floor_partition_id).all()
         if slots:
             return slots
         else:
-            abort(401,message="Plz enter correct floor partition id")
+            abort(400,message="Plz enter correct floor partition id")
 @blp.route("/slot/<int:slot_id>")
 class SlotOperations(MethodView):
     @jwt_required()
     @blp.response(200, SlotSchema)
     def get(self, slot_id):
-        jwt=get_jwt()
-        if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
         slot = SlotModel.query.filter(SlotModel.id==slot_id).first()
         if slot :
             return slot
         else :
-            abort(401,message="Plz enter correct slot id")
+            abort(400,message="Plz enter correct slot id")
     
     @jwt_required()
     def delete(self, slot_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         slot = SlotModel.query.filter(SlotModel.id==slot_id).first()
         if slot :
             db.session.delete(slot)
             db.session.commit()
-            return {"message": "slot deleted."}, 200
+            return {"message": "slot deleted."}, 204
         else :
-            abort(401,message="Plz enter correct slot id")
+            abort(400,message="Plz enter correct slot id")

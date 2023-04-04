@@ -15,18 +15,18 @@ class Booking(MethodView):
     @blp.arguments(AddBookingSchema)
     def post(Self,booking_data):
         # for validation of vehicle and slot
-        vehicle=VehicleModel.query.filter(VehicleModel.number==booking_data["vehicle_number"]).first()
+        vehicle=VehicleModel.query.filter(VehicleModel.number==booking_data["vehicle_number"].upper()).first()
         slot=SlotModel.query.filter(SlotModel.id==booking_data["slot_id"]).first()
         if not vehicle:
-            abort(401,message="Plz enter correct Vehicle number or Register vehicle ")
+            abort(409,message="Plz enter correct Vehicle number or Register vehicle ")
         if vehicle.is_parked:
-            abort(401,message="Vehicle is already parked ")
+            abort(409,message="Vehicle is already parked ")
         if not slot:
-            abort(401,message="Plz Select correct slot ")
+            abort(409,message="Plz Select correct slot ")
         if slot.reserved:
-            abort(401,message="Plz Select Empty slot ")
+            abort(409,message="Plz Select Empty slot ")
         if vehicle.type!=slot.type:
-            abort(401,message="Plz Select Valid slot ")
+            abort(409,message="Plz Select Valid slot ")
 
 
         logged_in_user_id=get_jwt().get("sub")
@@ -41,7 +41,7 @@ class Booking(MethodView):
         slot.reserved=True
         db.session.commit()
         return {"message":"booking created Succesfully"},201
-
+    @jwt_required()
     @blp.response(200, ShowBookingSchema(many=True))
     def get(self):
         bookings = BookingModel.query.all()
@@ -50,44 +50,48 @@ class Booking(MethodView):
 
 @blp.route("/booking/<booking_id>")
 class BookingOperation(MethodView):
+    @jwt_required()
     @blp.response(200, ShowBookingSchema)
     def get(self, booking_id):
         booking = BookingModel.query.filter(BookingModel.id==booking_id).first()
         if booking :
             return booking
         else :
-            abort(401,message="Plz enter correct booking id")
+            abort(400,message="Plz enter correct booking id")
     
     @jwt_required()
     def delete(self, booking_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         booking = BookingModel.query.filter(BookingModel.id==booking_id).first()
         if booking :
             db.session.delete(booking)
             db.session.commit()
-            return {"message": "booking deleted."}, 200
+            return {"message": "booking deleted."}, 204
         else :
-            abort(401,message="Plz enter correct booking id")
+            abort(400,message="Plz enter correct booking id")
 
     @jwt_required()
     @blp.arguments(BookingUpdateSchema)
-    @blp.response(201,ShowBookingSchema)
+    @blp.response(200,ShowBookingSchema)
     def put(self,booking_data,booking_id):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
-            abort(401,message="admin privilege required ")
+            abort(403,message="admin privilege required ")
         booking = BookingModel.query.filter(BookingModel.id==booking_id).first()
-        slot=SlotModel.query.filter(SlotModel.id==booking_data["slot_id"]).first()
-        if not slot:
-            abort(401,message="Plz Select correct slot ")
-        if slot.reserved:
-            abort(401,message="Plz Select Empty slot ")        
+        current_slot=SlotModel.query.filter(SlotModel.id==booking.slot_id).first()
+        updated_slot=SlotModel.query.filter(SlotModel.id==booking_data["slot_id"]).first()
+        if not updated_slot:
+            abort(409,message="Plz Select correct slot ")
+        if updated_slot.reserved:
+            abort(409,message="Plz Select Empty slot ")   
+        current_slot.reserved=False
+        updated_slot.reserved=True
         if booking:
-            booking.slot_id=booking_data["slot_id"]
+            booking.slot_id=updated_slot.id
         else:
-            abort(401,message="Enter correct booking id")
+            abort(400,message="Enter correct booking id")
         db.session.add(booking)
         db.session.commit()
         return booking
